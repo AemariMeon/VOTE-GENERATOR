@@ -62,7 +62,7 @@
       opacity: 1;
       transition: opacity 1s ease-out;
     }
-    #autoCopyToggleContainer, #categorySelectContainer {
+    #autoCopyToggleContainer {
       display: flex;
       justify-content: center;
       margin-bottom: 1rem;
@@ -70,56 +70,35 @@
   </style>
 </head>
 <body>
-  <h1>Support Mr. & Ms. Chemical Engineering 💛</h1>
-  
-  <div id="categorySelectContainer">
-    <label for="categorySelect">Choose Category:</label>
-    <select id="categorySelect">
-      <option value="mr">Mr. ChE</option>
-      <option value="ms">Ms. ChE</option>
-    </select>
-  </div>
-
+  <h1>Support Mr. Chemical Engineering 💛</h1>
   <div id="autoCopyToggleContainer">
     <label><input type="checkbox" id="autoCopyToggle" checked> Auto-copy every 3 seconds</label>
   </div>
-
   <div class="container" id="commentList"></div>
   <button id="generateMore">Generate More Comments</button>
   <div id="notification">Copied to clipboard!</div>
 
   <script>
-    const baseCommentsMr = [
+    let baseComments = [
       "All hail Mr. Chemical Engineering! 🔥👑",
       "Grabe 'yung presence, parang Greek god 😭💛",
       "CHED-approved! Mr. ChE supremacy 💥",
       "The crown has spoken: Luis Jed for the win! 👑✨",
       "Chemical reaction? More like kilig overload 💘⚗️",
-      "Mr. ChE? More like Mr. PERFECTION 😤🔥",
-      "This isn't just engineering—it's ART 🎨⚙️",
-      "Luis Jed could make even thermodynamics look effortless 😎",
-      "Serving science, style, and sheer charisma 🚀",
-      "Density, viscosity, and straight-up **legend status** ✅",
-      "Forget entropy—his energy is **LIMITLESS** ⚡🔬"
-    ];
-
-    const baseCommentsMs = [
-      "Ms. Chemical Engineering is the queen we deserve! 👑💛",
-      "Elegance meets intelligence—Ms. ChE is unmatched! ✨",
-      "No need for lab experiments, the results are clear: She’s the best! 🔬",
-      "Radiating confidence, talent, and pure ChE energy! 💖",
-      "She’s serving beauty, brains, and brilliance! 🔥",
-      "Ms. ChE? More like **Ms. Effortlessly Iconic** 💛",
-      "If beauty had a chemical formula, she perfected it 😍⚗️",
-      "Graceful under pressure, just like a true engineer ⚙️✨",
-      "She’s got the whole periodic table **mesmerized** 🧪💎",
-      "This vote is powered by ChE **QUEEN ENERGY** 🚀",
-      "Nothing toxic here—just **pure brilliance** ✨"
+      "Mr. Chemical Engineering? More like Mr. Periodic Table of Slay 😤",
+      "Hydrogen, Oxygen, Luis Jed — essentials of life. 😎",
+      "No need for titration, panalo na agad ‘to 🔬",
+      "Combustion level: 100% 🔥 Mr. ChE got us melting",
+      "If elegance were a compound, it’s definitely Luis Jedium. 🧪💛",
+      "Voting with 100% support and 0% hesitation 🙌",
+      "Serving looks, brains, and vibes 🔥",
+      "This vote is proudly powered by ChE energy 🚀",
+      "Mr. Knights 2025? You already know who it is. 🙌"
     ];
 
     const commentList = document.getElementById("commentList");
     const notification = document.getElementById("notification");
-    const categorySelect = document.getElementById("categorySelect");
+    let generatedCount = 0;
 
     function showNotification(message = "Copied to clipboard!") {
       notification.textContent = message;
@@ -128,28 +107,21 @@
       setTimeout(() => {
         notification.style.opacity = 0;
         setTimeout(() => (notification.style.display = "none"), 1000);
-      }, 3000);
+      }, 5000);
     }
 
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).then(() => showNotification("Copied to clipboard!"));
+    function copyToClipboard(text, showNote = true) {
+      navigator.clipboard.writeText(text).then(() => {
+        if (showNote) showNotification("Copied to clipboard!");
+      }).catch(err => {
+        console.error('Copy failed', err);
+      });
     }
 
-    function addComments(batchSize = 10) {
-      const selectedCategory = categorySelect.value;
-      const baseComments = selectedCategory === "mr" ? baseCommentsMr : baseCommentsMs;
-
-      let usedIndices = new Set(); 
-    
+    function addComments(batchSize = 50) {
       for (let i = 0; i < batchSize; i++) {
-        let randomIndex;
-
-        do {
-          randomIndex = Math.floor(Math.random() * baseComments.length);
-        } while (usedIndices.has(randomIndex));
-
-        usedIndices.add(randomIndex);
-        const comment = baseComments[randomIndex];
+        let base = baseComments[(generatedCount + i) % baseComments.length];
+        let comment = `${base}`;
 
         const div = document.createElement("div");
         div.className = "comment-box";
@@ -166,15 +138,25 @@
         div.appendChild(button);
         commentList.appendChild(div);
       }
+      generatedCount += batchSize;
     }
 
-    document.getElementById("generateMore").addEventListener("click", () => addComments(10));
-    categorySelect.addEventListener("change", () => {
-      commentList.innerHTML = ""; 
-      addComments(10);
-    });
+    document.getElementById("generateMore").addEventListener("click", () => addComments(50));
 
-    addComments(10);
+    // Initial load
+    addComments(50);
+
+    // Auto copy random comment every X seconds (if enabled)
+    const AUTO_COPY_INTERVAL = 3000; // milliseconds
+    setInterval(() => {
+      const toggle = document.getElementById("autoCopyToggle");
+      if (!toggle.checked) return;
+      const allComments = document.querySelectorAll(".comment-text");
+      if (allComments.length === 0) return;
+      const randomIndex = Math.floor(Math.random() * allComments.length);
+      const text = allComments[randomIndex].textContent;
+      copyToClipboard(text);
+    }, AUTO_COPY_INTERVAL);
   </script>
 </body>
 </html>
