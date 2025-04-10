@@ -108,7 +108,6 @@
     const commentList = document.getElementById("commentList");
     const notification = document.getElementById("notification");
     const categorySelect = document.getElementById("categorySelect");
-    let generatedCount = 0;
 
     function showNotification(message = "Copied to clipboard!") {
       notification.textContent = message;
@@ -117,25 +116,22 @@
       setTimeout(() => {
         notification.style.opacity = 0;
         setTimeout(() => (notification.style.display = "none"), 1000);
-      }, 5000);
+      }, 3000);
     }
 
-    function copyToClipboard(text, showNote = true) {
-      navigator.clipboard.writeText(text).then(() => {
-        if (showNote) showNotification("Copied to clipboard!");
-      }).catch(err => {
-        console.error('Copy failed', err);
-      });
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => showNotification("Copied to clipboard!"));
     }
 
-    function addComments(batchSize = 50) {
-      commentList.innerHTML = ""; // Clear existing comments
+    function addComments(batchSize = 10) {
+      commentList.innerHTML = ""; // Clear existing comments before generating new ones
+
       const selectedCategory = categorySelect.value;
       const baseComments = selectedCategory === "mr" ? baseCommentsMr : baseCommentsMs;
 
       for (let i = 0; i < batchSize; i++) {
-        let base = baseComments[(generatedCount + i) % baseComments.length];
-        let comment = `${base}`;
+        const randomIndex = Math.floor(Math.random() * baseComments.length);
+        const comment = baseComments[randomIndex];
 
         const div = document.createElement("div");
         div.className = "comment-box";
@@ -152,24 +148,12 @@
         div.appendChild(button);
         commentList.appendChild(div);
       }
-      generatedCount += batchSize;
     }
 
-    document.getElementById("generateMore").addEventListener("click", () => addComments(50));
-    categorySelect.addEventListener("change", () => addComments(50));
+    document.getElementById("generateMore").addEventListener("click", () => addComments(10));
+    categorySelect.addEventListener("change", () => addComments(10));
 
-    addComments(50);
-
-    const AUTO_COPY_INTERVAL = 3000;
-    setInterval(() => {
-      const toggle = document.getElementById("autoCopyToggle");
-      if (!toggle.checked) return;
-      const allComments = document.querySelectorAll(".comment-text");
-      if (allComments.length === 0) return;
-      const randomIndex = Math.floor(Math.random() * allComments.length);
-      const text = allComments[randomIndex].textContent;
-      copyToClipboard(text);
-    }, AUTO_COPY_INTERVAL);
+    addComments(10); // Initial load
   </script>
 </body>
 </html>
