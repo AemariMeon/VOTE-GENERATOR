@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vote Comment Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fffbe6;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #d4af37;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    .comment-box {
+      background: #fff;
+      border: 2px solid #ffd700;
+      padding: 1rem;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .comment-text {
+      flex-grow: 1;
+      margin-right: 1rem;
+    }
+    button {
+      background: #ffd700;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #ffcc00;
+    }
+    #generateMore {
+      display: block;
+      margin: 2rem auto;
+    }
+    #notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #ffd700;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      display: none;
+      opacity: 1;
+      transition: opacity 1s ease-out;
+    }
+    #autoCopyToggleContainer {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Support Mr. Chemical Engineering 💛</h1>
+  <div id="autoCopyToggleContainer">
+    <label><input type="checkbox" id="autoCopyToggle" checked> Auto-copy every 3 seconds</label>
+  </div>
+  <div class="container" id="commentList"></div>
+  <button id="generateMore">Generate More Comments</button>
+  <div id="notification">Copied to clipboard!</div>
+
+  <script>
+    let baseComments = [
+      "All hail Mr. Chemical Engineering! 🔥👑",
+      "Grabe 'yung presence, parang Greek god 😭💛",
+      "CHED-approved! Mr. ChE supremacy 💥",
+      "The crown has spoken: Luis Jed for the win! 👑✨",
+      "Chemical reaction? More like kilig overload 💘⚗️",
+      "Mr. Chemical Engineering? More like Mr. Periodic Table of Slay 😤",
+      "Hydrogen, Oxygen, Luis Jed — essentials of life. 😎",
+      "No need for titration, panalo na agad ‘to 🔬",
+      "Combustion level: 100% 🔥 Mr. ChE got us melting",
+      "If elegance were a compound, it’s definitely Luis Jedium. 🧪💛",
+      "Voting with 100% support and 0% hesitation 🙌",
+      "Serving looks, brains, and vibes 🔥",
+      "This vote is proudly powered by ChE energy 🚀",
+      "Mr. Knights 2025? You already know who it is. 🙌"
+    ];
+
+    const commentList = document.getElementById("commentList");
+    const notification = document.getElementById("notification");
+    let generatedCount = 0;
+
+    function showNotification(message = "Copied to clipboard!") {
+      notification.textContent = message;
+      notification.style.display = "block";
+      notification.style.opacity = 1;
+      setTimeout(() => {
+        notification.style.opacity = 0;
+        setTimeout(() => (notification.style.display = "none"), 1000);
+      }, 5000);
+    }
+
+    function copyToClipboard(text, showNote = true) {
+      navigator.clipboard.writeText(text).then(() => {
+        if (showNote) showNotification("Copied to clipboard!");
+      }).catch(err => {
+        console.error('Copy failed', err);
+      });
+    }
+
+    function addComments(batchSize = 50) {
+      for (let i = 0; i < batchSize; i++) {
+        let base = baseComments[(generatedCount + i) % baseComments.length];
+        let comment = `${base}`;
+
+        const div = document.createElement("div");
+        div.className = "comment-box";
+
+        const span = document.createElement("span");
+        span.className = "comment-text";
+        span.textContent = comment;
+
+        const button = document.createElement("button");
+        button.textContent = "Copy";
+        button.addEventListener("click", () => copyToClipboard(comment));
+
+        div.appendChild(span);
+        div.appendChild(button);
+        commentList.appendChild(div);
+      }
+      generatedCount += batchSize;
+    }
+
+    document.getElementById("generateMore").addEventListener("click", () => addComments(50));
+
+    // Initial load
+    addComments(50);
+
+    // Auto copy random comment every X seconds (if enabled)
+    const AUTO_COPY_INTERVAL = 3000; // milliseconds
+    setInterval(() => {
+      const toggle = document.getElementById("autoCopyToggle");
+      if (!toggle.checked) return;
+      const allComments = document.querySelectorAll(".comment-text");
+      if (allComments.length === 0) return;
+      const randomIndex = Math.floor(Math.random() * allComments.length);
+      const text = allComments[randomIndex].textContent;
+      copyToClipboard(text);
+    }, AUTO_COPY_INTERVAL);
+  </script>
+</body>
+</html>
