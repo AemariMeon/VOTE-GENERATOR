@@ -94,7 +94,13 @@
       "Grabe 'yung presence, parang Greek god 😭💛",
       "CHED-approved! Mr. ChE supremacy 💥",
       "The crown has spoken: Luis Jed for the win! 👑✨",
-      "Chemical reaction? More like kilig overload 💘⚗️"
+      "Chemical reaction? More like kilig overload 💘⚗️",
+      "Mr. ChE? More like Mr. PERFECTION 😤🔥",
+      "This isn't just engineering—it's ART 🎨⚙️",
+      "Luis Jed could make even thermodynamics look effortless 😎",
+      "Serving science, style, and sheer charisma 🚀",
+      "Density, viscosity, and straight-up **legend status** ✅",
+      "Forget entropy—his energy is **LIMITLESS** ⚡🔬"
     ];
 
     const baseCommentsMs = [
@@ -102,7 +108,13 @@
       "Elegance meets intelligence—Ms. ChE is unmatched! ✨",
       "No need for lab experiments, the results are clear: She’s the best! 🔬",
       "Radiating confidence, talent, and pure ChE energy! 💖",
-      "She’s serving beauty, brains, and brilliance! 🔥"
+      "She’s serving beauty, brains, and brilliance! 🔥",
+      "Ms. ChE? More like **Ms. Effortlessly Iconic** 💛",
+      "If beauty had a chemical formula, she perfected it 😍⚗️",
+      "Graceful under pressure, just like a true engineer ⚙️✨",
+      "She’s got the whole periodic table **mesmerized** 🧪💎",
+      "This vote is powered by ChE **QUEEN ENERGY** 🚀",
+      "Nothing toxic here—just **pure brilliance** ✨"
     ];
 
     const commentList = document.getElementById("commentList");
@@ -124,13 +136,19 @@
     }
 
     function addComments(batchSize = 10) {
-      commentList.innerHTML = ""; // Clear existing comments before generating new ones
-
       const selectedCategory = categorySelect.value;
       const baseComments = selectedCategory === "mr" ? baseCommentsMr : baseCommentsMs;
 
+      let usedIndices = new Set(); 
+    
       for (let i = 0; i < batchSize; i++) {
-        const randomIndex = Math.floor(Math.random() * baseComments.length);
+        let randomIndex;
+
+        do {
+          randomIndex = Math.floor(Math.random() * baseComments.length);
+        } while (usedIndices.has(randomIndex));
+
+        usedIndices.add(randomIndex);
         const comment = baseComments[randomIndex];
 
         const div = document.createElement("div");
@@ -151,9 +169,12 @@
     }
 
     document.getElementById("generateMore").addEventListener("click", () => addComments(10));
-    categorySelect.addEventListener("change", () => addComments(10));
+    categorySelect.addEventListener("change", () => {
+      commentList.innerHTML = ""; 
+      addComments(10);
+    });
 
-    addComments(10); // Initial load
+    addComments(10);
   </script>
 </body>
 </html>
